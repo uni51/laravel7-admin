@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\UserCrateRequest;
+use App\Http\Requests\UserUpdateRequest;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -19,23 +21,20 @@ class UserController extends Controller
         return User::find($id);
     }
 
-    public function store(Request $request)
+    public function store(UserCrateRequest $request)
     {
-        $user = User::create($request->all());
+        $user = User::create($request->only('first_name', 'last_name', 'email') + [
+            'password' => Hash::make(1234),
+        ]);
 
         return response($user, Response::HTTP_CREATED); // 201
     }
 
-    public function update(Request $request, $id)
+    public function update(UserUpdateRequest $request, $id)
     {
         $user = User::find($id);
 
-        $user->update([
-            'first_name' => $request->input('first_name'),
-            'last_name' => $request->input('last_name'),
-            'email' => $request->input('email'),
-            'password' => Hash::make($request->input('password')),
-        ]);
+        $user->update($request->only('first_name', 'last_name', 'email'));
 
         return response($user, Response::HTTP_ACCEPTED); // 202
     }
