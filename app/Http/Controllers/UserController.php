@@ -45,4 +45,29 @@ class UserController extends Controller
 
         return response(null, Response::HTTP_NO_CONTENT); //204
     }
+
+    public function user()
+    {
+        return \Auth::user();
+    }
+
+    public function updateInfo(Request $request)
+    {
+        $user = \Auth::user();
+
+        $user->update($request->only('first_name', 'last_name', 'email'));
+
+        return response($user, Response::HTTP_ACCEPTED); // 202
+    }
+
+    public function updatePassword(Request $request)
+    {
+        $user = \Auth::user();
+
+        $user->update([
+           'password' => Hash::make($request->input('password'))
+        ]);
+
+        return response($user, Response::HTTP_ACCEPTED); // 202
+    }
 }
